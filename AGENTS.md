@@ -4,10 +4,12 @@
 
 Both must run simultaneously for netplay to work:
 
-1. **Netplay server**: `cd netplay-server && node server.js` → port 3000
-2. **Custom app**: `cd app && node server.js` → port 8080
+1. **Netplay server**: `cd netplay-server && npm install && node server.js` → port 3000
+2. **Custom app**: `cd app && npm install && node server.js` → port 8080
 
 Local browser target: `http://localhost:8080`.
+
+`netplay-server/` is a git submodule pointing to `https://github.com/EmulatorJS/EmulatorJS-Netplay`. On a fresh clone, run `git submodule update --init`. It uses Express 5 (upstream code) — do not modify it.
 
 ## EmulatorJS data setup
 
