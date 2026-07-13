@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin - friends-party-retro</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="topbar">
+      <a href="/lobby.html">&larr; Lobby</a>
+      <span>Panel de Administracion</span>
+      <button onclick="logout()" class="secondary small">Salir</button>
+    </div>
+
+    <div id="admin-content" style="display:none;">
+
+      <section class="card">
+        <h2>Agregar Juego</h2>
+        <form id="add-game-form" enctype="multipart/form-data">
+          <input type="text" id="game-name" placeholder="Nombre del juego" required>
+          <div class="form-row">
+            <label>
+              Sistema
+              <select id="game-system">
+                <option value="snes">SNES</option>
+                <option value="nes">NES</option>
+                <option value="gba">GBA</option>
+                <option value="gb">Game Boy</option>
+                <option value="gbc">Game Boy Color</option>
+                <option value="genesis">Genesis/Mega Drive</option>
+              </select>
+            </label>
+            <label>
+              Core
+              <select id="game-core">
+                <option value="snes9x">snes9x</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Max jugadores
+            <input type="number" id="game-max-players" min="1" max="8" value="2">
+          </label>
+          <textarea id="game-description" placeholder="Descripcion (opcional)" rows="2"></textarea>
+          <div class="form-row">
+            <label class="file-label">
+              ROM (obligatorio)
+              <input type="file" id="game-rom" accept=".sfc,.smc,.nes,.gba,.gb,.gbc,.gen,.md,.zip,.7z" required>
+            </label>
+            <label class="file-label">
+              Portada (opcional)
+              <input type="file" id="game-cover" accept=".jpg,.jpeg,.png,.gif,.webp">
+            </label>
+          </div>
+          <div id="cover-preview"></div>
+          <button type="submit">Agregar Juego</button>
+          <p id="add-error" class="error"></p>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2>Juegos Existentes (<span id="games-count">0</span>)</h2>
+        <div id="games-grid" class="games-grid">
+          <p>Cargando...</p>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Usuarios (<span id="users-count">0</span>)</h2>
+        <div class="table-wrapper">
+          <table id="users-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Usuario</th>
+                <th>Admin</th>
+                <th>Registro</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="users-body">
+              <tr><td colspan="5">Cargando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </div>
+
+    <div id="no-admin" style="display:none;">
+      <div class="card">
+        <h2>Acceso denegado</h2>
+        <p>No tienes permisos de administrador.</p>
+        <a href="/lobby.html">Volver al lobby</a>
+      </div>
+    </div>
+
+    <div id="not-logged" style="display:none;">
+      <div class="card">
+        <h2>No autenticado</h2>
+        <p>Debes iniciar sesion para acceder al panel de admin.</p>
+        <a href="/">Iniciar sesion</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

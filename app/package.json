@@ -1,0 +1,25 @@
+{
+  "name": "friends-party-retro",
+  "version": "0.1.0",
+  "description": "Plataforma self-hosted de juego online con EmulatorJS en OrangePi PC. Los jugadores se registran, crean salas o se unen a una existente desde el navegador y juegan con la misma version del emulador y ROM.",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "@emulatorjs/core-snes9x": "^4.2.3",
+    "@emulatorjs/emulatorjs": "^4.2.3",
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.3.0",
+    "cookie-parser": "^1.4.6",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.2.0",
+    "socket.io-client": "^4.7.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

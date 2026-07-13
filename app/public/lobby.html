@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lobby - friends-party-retro</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div id="topbar">
+      <a href="/">&larr; Inicio</a>
+      <span>Hola, <span id="me-username"></span></span>
+      <a href="/admin.html" id="admin-link" style="display:none;" class="secondary small">Admin</a>
+      <button onclick="logout()" class="secondary small">Salir</button>
+    </div>
+
+    <h1>Lobby</h1>
+
+    <section>
+      <h2>1. Elige un juego</h2>
+      <div id="games-list" class="games-grid">
+        <p>Cargando juegos...</p>
+      </div>
+    </section>
+
+    <section id="rooms-section" style="display:none;">
+      <h2>2. Salas de <span id="selected-game-name"></span></h2>
+
+      <div class="card">
+        <h3>Crear sala nueva</h3>
+        <form id="create-room-form">
+          <input type="text" id="room-name" placeholder="Nombre de la sala" required>
+          <label>
+            Max jugadores:
+            <input type="number" id="max-players" min="1" max="4" value="2">
+          </label>
+          <input type="password" id="room-password" placeholder="Contrasena (opcional)">
+          <button type="submit">Crear sala</button>
+        </form>
+        <p id="create-error" class="error"></p>
+      </div>
+
+      <div class="card">
+        <h3>Salas abiertas</h3>
+        <div id="rooms-list">
+          <p>No hay salas abiertas. Crea una!</p>
+        </div>
+        <button onclick="refreshRooms()" class="secondary small">Actualizar</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="/js/auth.js"></script>
+  <script src="/js/lobby.js"></script>
+  <script>
+    initLobby();
+  </script>
+</body>
+</html>
