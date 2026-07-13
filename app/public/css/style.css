@@ -665,6 +665,33 @@ tr:hover td { background: rgba(0, 240, 255, 0.04); }
   border-radius: 3px;
 }
 
+.netplay-hint {
+  margin-top: 44px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: var(--radius);
+  backdrop-filter: blur(12px);
+}
+
+.netplay-hint p {
+  font-family: 'Press Start 2P', cursive;
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+
+.netplay-hint ol {
+  padding-left: 24px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+.netplay-hint ol strong {
+  color: var(--warning);
+}
+
 /* Responsive */
 @media (max-width: 760px) {
   h1 { font-size: 1.1rem; }

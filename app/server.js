@@ -169,21 +169,14 @@ function renderErrorPage({ title, message, code }) {
 </html>`;
 }
 
-app.get('/play/:roomId', authRequired, (req, res) => {
-  const room = queries.getRoom.get(req.params.roomId);
-  if (!room) {
-    return res.status(404).type('html').send(renderErrorPage({
-      title: 'Sala no encontrada',
-      code: 'SALA NO ENCONTRADA',
-      message: 'La sala que buscas no existe o ya fue cerrada.'
-    }));
-  }
-  const game = queries.getGameById.get(room.game_id);
+app.get('/play/:gameId', authRequired, (req, res) => {
+  const gameId = parseInt(req.params.gameId, 10);
+  const game = queries.getGameById.get(gameId);
   if (!game) {
     return res.status(404).type('html').send(renderErrorPage({
       title: 'Juego no encontrado',
       code: 'JUEGO NO ENCONTRADO',
-      message: 'El juego asociado a esta sala ya no está disponible.'
+      message: 'El juego que buscas no existe.'
     }));
   }
 
@@ -192,14 +185,9 @@ app.get('/play/:roomId', authRequired, (req, res) => {
   const turnCred = process.env.TURN_CRED || '';
   const stunUrl = process.env.STUN_URL || 'stun:stun.l.google.com:19302';
 
-  const isHost = room.host_user_id === req.user.sub;
-
   const html = renderPlayPage({
     game,
-    room,
     username: req.user.username,
-    userId: req.user.sub,
-    isHost,
     stunUrl,
     turnUrl,
     turnUser,
@@ -208,7 +196,7 @@ app.get('/play/:roomId', authRequired, (req, res) => {
   res.type('html').send(html);
 });
 
-function renderPlayPage({ game, room, username, userId, isHost, stunUrl, turnUrl, turnUser, turnCred }) {
+function renderPlayPage({ game, username, stunUrl, turnUrl, turnUser, turnCred }) {
   const iceServers = [{ urls: stunUrl }];
   if (turnUrl) {
     iceServers.push({
@@ -218,7 +206,6 @@ function renderPlayPage({ game, room, username, userId, isHost, stunUrl, turnUrl
     });
   }
   const iceJson = JSON.stringify(iceServers);
-  const passwordJson = room.password ? JSON.stringify(room.password) : 'null';
 
   return `<!DOCTYPE html>
 <html lang="es">
@@ -231,7 +218,7 @@ function renderPlayPage({ game, room, username, userId, isHost, stunUrl, turnUrl
 <body>
   <div id="topbar">
     <a href="/lobby.html">&larr; Salir al lobby</a>
-    <span>${game.name} | Sala: ${room.room_name}</span>
+    <span>${game.name} | Jugando: ${username}</span>
   </div>
   <div style="width:640px;height:480px;max-width:100%;margin:20px auto;">
     <div id="game"></div>
@@ -245,22 +232,29 @@ function renderPlayPage({ game, room, username, userId, isHost, stunUrl, turnUrl
     EJS_gameName = '${game.name.replace(/'/g, "\\'")}';
     EJS_pathtodata = '/data/';
     EJS_startOnLoaded = true;
-    EJS_netplayServer = '';
+    EJS_netplayServer = '${NETPLAY_SERVER_URL}';
     EJS_netplayICEServers = ${iceJson};
     EJS_DEBUG_XX = true;
-
-    window.ROOM_ID = '${room.room_id}';
-    window.PLAYER_ID = '${userId}';
-    window.PLAYER_NAME = '${username.replace(/'/g, "\\'")}';
-    window.ROOM_PASSWORD = ${passwordJson};
-    window.NETPLAY_SERVER_URL = '${NETPLAY_SERVER_URL}';
-    window.IS_HOST = ${isHost ? 'true' : 'false'};
-    window.ROOM_NAME = '${room.room_name.replace(/'/g, "\\'")}';
-    window.MAX_PLAYERS = ${room.max_players};
+    EJS_EXPERIMENTAL_NETPLAY = true;
   </script>
   <script src="/data/src/socket.io.min.js"></script>
   <script src="/data/loader.js"></script>
-  <script src="/js/netplay-client.js"></script>
+  <script>
+    // EmulatorJS oculta el boton Netplay por timing en checkSupportedOpts.
+    // Forzamos visibilidad despues de que el emulador termina de cargar.
+    (function () {
+      var tries = 0;
+      var iv = setInterval(function () {
+        tries++;
+        var emu = window.EJS_emulator;
+        if (emu && emu.elements && emu.elements.bottomBar && emu.elements.bottomBar.netplay) {
+          emu.elements.bottomBar.netplay[0].style.display = '';
+          if (emu.netplayEnabled) clearInterval(iv);
+        }
+        if (tries > 60) clearInterval(iv);
+      }, 250);
+    })();
+  </script>
 </body>
 </html>`;
 }
