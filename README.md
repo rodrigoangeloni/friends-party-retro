@@ -89,7 +89,7 @@
 
 ```bash
 
-git clone https://github.com/RodrigoAngeloni/friends-party-retro.git
+git clone https://github.com/rodrigoangeloni/friends-party-retro.git
 cd friends-party-retro
 
 
