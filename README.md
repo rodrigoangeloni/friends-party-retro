@@ -260,15 +260,11 @@ Proyecto personal. EmulatorJS es Apache-2.0, el netplay server también.
 
 ---
 
-<div align="center">
+## 👨‍💻 Autor
 
-## 👨‍💻 Créditos de desarrollo
+Hecho con pasión por [Rodrigo Angeloni](https://github.com/rodrigoangeloni).
 
-**Rodrigo Angeloni**
-
-[![GitHub](https://img.shields.io/badge/GitHub-rodrigoangeloni-181717.svg?logo=github)](https://github.com/rodrigoangeloni)
-
-### Agradecimientos
+## 🙏 Agradecimientos
 
 - [EmulatorJS](https://github.com/EmulatorJS/EmulatorJS) — Motor de emulación (RetroArch → WASM)
 - [EmulatorJS-Netplay](https://github.com/EmulatorJS/EmulatorJS-Netplay) — Servidor de netplay
@@ -277,6 +273,4 @@ Proyecto personal. EmulatorJS es Apache-2.0, el netplay server también.
 
 ---
 
-⭐ **Si te gusta el proyecto, dale una estrella!** ⭐
-
-</div>
+⭐ Si te gusta el proyecto, [dale una estrella en GitHub](https://github.com/rodrigoangeloni/friends-party-retro). ⭐
