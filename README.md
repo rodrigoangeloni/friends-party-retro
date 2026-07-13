@@ -8,10 +8,10 @@
 [![Node.js](https://img.shields.io/badge/Node.js->=18-green.svg)](https://nodejs.org)
 [![Express](https://img.shields.io/badge/Express-4.x-black.svg)](https://expressjs.com)
 [![EmulatorJS](https://img.shields.io/badge/EmulatorJS-4.2-orange.svg)](https://github.com/EmulatorJS/EmulatorJS)
-[![Platform](https://img.shields.io/badge/Platform-OrangePi%20PC%20%7C%20ARMv7-red.svg)](https://orange-pi.org)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20Windows%20%7C%20macOS-red.svg)](#)
 [![Status](https://img.shields.io/badge/status-MVP-yellow.svg)](#)
 
-**Plataforma web self-hosted para jugar juegos retro online** mediante emuladores en el navegador. Diseñada para correr en una **OrangePi PC** (1GB RAM, ARMv7) como servidor de salas/matchmaking.
+**Plataforma web self-hosted para jugar juegos retro online** mediante emuladores en el navegador. Corre en cualquier dispositivo con Node.js 18+ — Linux, Windows, macOS, Raspberry Pi o una OrangePi PC.
 
 [Características](#-características) ·
 [Arquitectura](#-arquitectura) ·
@@ -32,7 +32,7 @@
 - 🎮 **Netplay P2P** via WebRTC con servidor TURN de respaldo
 - 🛡️ **Panel de administración** web para gestionar juegos y usuarios
 - 📦 **Sin build step** — HTML/CSS/JS vanilla en el frontend
-- 🍓 **Optimizado para OrangePi** (1GB RAM, ARMv7)
+- 🍓 **Ligero** — ~360 MB RAM en uso total, corre en hardware modesto
 
 ## 🏗️ Arquitectura
 
@@ -47,7 +47,7 @@
             │ HTTP                 │ Estático             │ WebSocket
             ▼                      ▼                      ▼
 ┌───────────────────────────────────────────────────────────────────┐
-│                       Servidor (OrangePi PC)                       │
+│                        Servidor (Host)                              │
 │  ┌─────────────────────────────────────────────────────────────┐  │
 │  │                     Nginx (Puerto 80)                       │  │
 │  │            Reverse Proxy + SharedArrayBuffer Headers       │  │
@@ -76,7 +76,7 @@
 | **Base de datos** | SQLite (WAL mode) | 11.x |
 | **TURN** | coturn (solo producción) | - |
 | **Procesos** | PM2 (solo producción) | - |
-| **Servidor** | OrangePi PC (Allwinner H3, ARMv7, 1GB RAM) | - |
+| **Host** | Cualquier PC/server con Node.js 18+ (~360 MB RAM) | - |
 
 ## 🚀 Rápido inicio
 
@@ -150,14 +150,14 @@ friends-party-retro/
 │   ├── nginx.conf              # Reverse proxy + WebSocket + SharedArrayBuffer
 │   └── turnserver.conf         # coturn TURN
 ├── scripts/
-│   ├── install.sh              # Instalación 10 pasos en OrangePi
+│   ├── install.sh              # Instalación asistida (Linux)
 │   └── update-cores.sh         # Actualizar cores desde CDN
 ├── ecosystem.config.js         # PM2: lobby + netplay
 ├── .gitignore
 ├── AGENTS.md                   # Guía para AI agents
 ├── PLAN.md                     # Plan completo del proyecto
 ├── PLAN-ADMIN.md               # Plan del panel admin
-└── DEPLOY.md                   # Guía de despliegue OrangePi
+└── DEPLOY.md                   # Guía de despliegue en producción
 ```
 
 ## 🔌 Endpoints API
@@ -206,25 +206,29 @@ cp -r app/node_modules/@emulatorjs/emulatorjs/data/* app/public/data/
 - [x] Fase 15: Panel de administración (upload ROMs + covers, gestión usuarios)
 - [x] Testing local completo (registro → lobby → sala → emulador)
 - [ ] Fase 16: Sincronización de inputs P2P entre jugadores
-- [ ] Fase 17: Despliegue en OrangePi
+- [ ] Fase 17: Despliegue en producción
 - [ ] Tests automatizados
 
 Ver `PLAN.md` y `PLAN-ADMIN.md` para el detalle completo de fases.
 
-## 📋 Requisitos (OrangePi PC)
+## 📋 Requisitos mínimos
 
-- Armbian / Debian (ARMv7)
-- Node.js v18+
-- 1GB RAM mínimo (~360 MB estimado en uso)
-- Tarjeta SD de calidad (A2 recomendada)
-- Conexión estable a internet
+| Componente | Requisito |
+|---|---|
+| **Node.js** | v18+ |
+| **RAM** | ~360 MB (para ambos procesos) |
+| **OS** | Linux, Windows, macOS |
+| **Red** | Puerto 80/8080/3000 abiertos (solo host) |
+| **Disco** | ~100 MB + espacio para ROMs |
+
+> 💡 **Ejemplo**: Una OrangePi PC (Allwinner H3, ARMv7, 1GB RAM) con Armbian corre el proyecto perfectamente.
 
 ## 🚀 Despliegue en producción
 
-Para despliegue completo en OrangePi PC (Nginx + coturn + PM2), ver [`DEPLOY.md`](DEPLOY.md).
+Para despliegue con **Nginx + coturn + PM2**, ver [`DEPLOY.md`](DEPLOY.md) (guía detallada para Linux).
 
 ```bash
-# Instalación automática en OrangePi
+# Instalación asistida (Linux)
 chmod +x scripts/install.sh
 sudo ./scripts/install.sh
 ```
@@ -233,7 +237,7 @@ sudo ./scripts/install.sh
 
 - [PLAN.md](PLAN.md) — Arquitectura, decisiones y plan completo
 - [PLAN-ADMIN.md](PLAN-ADMIN.md) — Plan del panel de administración
-- [DEPLOY.md](DEPLOY.md) — Guía de despliegue en OrangePi
+- [DEPLOY.md](DEPLOY.md) — Guía de despliegue en producción
 - [AGENTS.md](AGENTS.md) — Guía técnica para AI agents
 
 ## ⚙️ Variables de entorno
@@ -262,7 +266,7 @@ Proyecto personal. EmulatorJS es Apache-2.0, el netplay server también.
 
 **Rodrigo Angeloni**
 
-[![GitHub](https://img.shields.io/badge/GitHub-RodrigoAngeloni-181717.svg?logo=github)](https://github.com/RodrigoAngeloni)
+[![GitHub](https://img.shields.io/badge/GitHub-rodrigoangeloni-181717.svg?logo=github)](https://github.com/rodrigoangeloni)
 
 ### Tecnologías utilizadas
 
@@ -275,8 +279,6 @@ Proyecto personal. EmulatorJS es Apache-2.0, el netplay server también.
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white)
-![PM2](https://img.shields.io/badge/PM2-2B037B?logo=prometheus&logoColor=white)
-![Docker](https://img.shields.io/badge/Arm-0091EA?logo=arm&logoColor=white)
 
 ### Agradecimientos
 
