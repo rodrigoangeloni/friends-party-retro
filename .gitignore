@@ -58,3 +58,6 @@ coverage/
 
 # Screenshots taken during development
 screenshots/
+
+# Work-in-progress design specs (local only)
+docs/email-auth-spec.md
