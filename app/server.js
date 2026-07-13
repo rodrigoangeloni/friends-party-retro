@@ -85,43 +85,6 @@ async function fetchOpenRooms(gameId) {
   return resp.json();
 }
 
-async function proxyCreateRoom(roomData, hostSocketId) {
-  const payload = {
-    extra: {
-      sessionid: roomData.room_id,
-      userid: String(roomData.host_user_id),
-      player_name: roomData.host_username,
-      room_name: roomData.room_name,
-      game_id: String(roomData.game_id),
-      domain: 'retro'
-    },
-    password: roomData.password || undefined,
-    maxPlayers: roomData.max_players
-  };
-  return new Promise((resolve) => {
-    const socketLib = require('socket.io-client');
-    const sock = socketLib.io(NETPLAY_SERVER_URL);
-    sock.on('connect', () => {
-      sock.emit('open-room', payload, (err) => {
-        if (err) {
-          sock.disconnect();
-          resolve({ ok: false, error: err });
-        } else {
-          sock.disconnect();
-          resolve({ ok: true });
-        }
-      });
-    });
-    sock.on('connect_error', () => {
-      resolve({ ok: false, error: 'No se pudo conectar al netplay server' });
-    });
-    setTimeout(() => {
-      sock.disconnect();
-      resolve({ ok: false, error: 'Timeout al crear sala' });
-    }, 5000);
-  });
-}
-
 app.get('/api/rooms', authRequired, async (req, res) => {
   const gameId = parseInt(req.query.game_id, 10);
   if (!gameId) {
@@ -161,21 +124,6 @@ app.post('/api/rooms', authRequired, async (req, res) => {
     password: password,
     host_user_id: req.user.sub
   });
-
-  const createResult = await proxyCreateRoom({
-    room_id: roomId,
-    host_user_id: req.user.sub,
-    host_username: req.user.username,
-    room_name: roomName,
-    game_id: gameId,
-    max_players: maxPlayers,
-    password: password
-  });
-
-  if (!createResult.ok) {
-    queries.deleteRoom.run(roomId);
-    return res.status(500).json({ error: 'Error al crear sala en netplay server', detail: createResult.error });
-  }
 
   res.json({ room_id: roomId, game_id: gameId, room_name: roomName, max_players: maxPlayers });
 });
@@ -244,11 +192,14 @@ app.get('/play/:roomId', authRequired, (req, res) => {
   const turnCred = process.env.TURN_CRED || '';
   const stunUrl = process.env.STUN_URL || 'stun:stun.l.google.com:19302';
 
+  const isHost = room.host_user_id === req.user.sub;
+
   const html = renderPlayPage({
     game,
     room,
     username: req.user.username,
     userId: req.user.sub,
+    isHost,
     stunUrl,
     turnUrl,
     turnUser,
@@ -257,7 +208,7 @@ app.get('/play/:roomId', authRequired, (req, res) => {
   res.type('html').send(html);
 });
 
-function renderPlayPage({ game, room, username, userId, stunUrl, turnUrl, turnUser, turnCred }) {
+function renderPlayPage({ game, room, username, userId, isHost, stunUrl, turnUrl, turnUser, turnCred }) {
   const iceServers = [{ urls: stunUrl }];
   if (turnUrl) {
     iceServers.push({
@@ -298,11 +249,14 @@ function renderPlayPage({ game, room, username, userId, stunUrl, turnUrl, turnUs
     EJS_netplayICEServers = ${iceJson};
     EJS_DEBUG_XX = true;
 
-    const ROOM_ID = '${room.room_id}';
-    const PLAYER_ID = '${userId}';
-    const PLAYER_NAME = '${username.replace(/'/g, "\\'")}';
-    const ROOM_PASSWORD = ${passwordJson};
-    const NETPLAY_SERVER_URL = '${NETPLAY_SERVER_URL}';
+    window.ROOM_ID = '${room.room_id}';
+    window.PLAYER_ID = '${userId}';
+    window.PLAYER_NAME = '${username.replace(/'/g, "\\'")}';
+    window.ROOM_PASSWORD = ${passwordJson};
+    window.NETPLAY_SERVER_URL = '${NETPLAY_SERVER_URL}';
+    window.IS_HOST = ${isHost ? 'true' : 'false'};
+    window.ROOM_NAME = '${room.room_name.replace(/'/g, "\\'")}';
+    window.MAX_PLAYERS = ${room.max_players};
   </script>
   <script src="/data/src/socket.io.min.js"></script>
   <script src="/data/loader.js"></script>
