@@ -57,16 +57,21 @@ async function loadGames() {
   games.forEach((game) => {
     const card = document.createElement('div');
     card.className = 'game-card';
+    const coverHtml = game.cover_path
+      ? `<div class="cover-wrap"><img src="${game.cover_path}" alt="${game.name}" loading="lazy"></div>`
+      : `<div class="cover-wrap"><div class="cover-placeholder">${game.name.charAt(0)}</div></div>`;
     card.innerHTML = `
-      ${game.cover_path
-        ? `<img src="${game.cover_path}" alt="${game.name}" class="game-cover">`
-        : `<div class="game-cover-placeholder">${game.name.charAt(0)}</div>`
-      }
-      <h3>${game.name}</h3>
-      <p>Sistema: ${game.system} | Core: ${game.core}</p>
-      <p>Max jugadores: ${game.max_players}</p>
-      ${game.description ? `<p class="desc">${game.description}</p>` : ''}
-      <p class="rom-path">ROM: ${game.rom_path}</p>
+      ${coverHtml}
+      <div class="info">
+        <h3>${game.name}</h3>
+        <div class="meta">
+          <span>${game.system.toUpperCase()}</span>
+          <span>${game.core}</span>
+          <span>${game.max_players} jugadores</span>
+        </div>
+        ${game.description ? `<p class="desc">${game.description}</p>` : ''}
+        <p class="rom-path">ROM: ${game.rom_path}</p>
+      </div>
       <div class="game-actions">
         <button onclick="deleteGame(${game.id}, '${game.name.replace(/'/g, "\\'")}')" class="error-btn">Eliminar</button>
       </div>

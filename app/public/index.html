@@ -3,41 +3,55 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>friends-party-retro</title>
+  <title>Friends Party Retro</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="container">
-    <h1>friends-party-retro</h1>
-    <p class="subtitle">Plataforma de juego online con emuladores</p>
+    <div class="hero">
+      <div class="logo">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 10.5v3h3v-3H2zm4-4v11h3v-11H6zm4-3v17h3V3.5h-3zm4 6v11h3v-11h-3zm4-3v14h3V6.5h-3z"/>
+        </svg>
+      </div>
+      <h1>Friends Party Retro</h1>
+      <p class="subtitle">Plataforma self-hosted para jugar juegos retro online con amigos</p>
+    </div>
 
     <div id="auth-section">
-      <div class="card">
-        <h2>Iniciar sesion</h2>
-        <form id="login-form">
-          <input type="text" id="login-username" placeholder="Usuario" autocomplete="username" required>
-          <input type="password" id="login-password" placeholder="Contrasena" autocomplete="current-password" required>
-          <button type="submit">Entrar</button>
-        </form>
-        <p id="login-error" class="error"></p>
-      </div>
+      <div class="auth-card">
+        <div class="auth-tabs" role="tablist">
+          <button type="button" class="auth-tab active" data-tab="login" role="tab" aria-selected="true">Iniciar sesion</button>
+          <button type="button" class="auth-tab" data-tab="register" role="tab" aria-selected="false">Registrarse</button>
+        </div>
 
-      <div class="card">
-        <h2>Registrarse</h2>
-        <form id="register-form">
-          <input type="text" id="reg-username" placeholder="Usuario (3-20 chars alfanumericos)" autocomplete="username" required>
-          <input type="password" id="reg-password" placeholder="Contrasena (min 4 chars)" autocomplete="new-password" required>
-          <button type="submit">Crear cuenta</button>
-        </form>
-        <p id="reg-error" class="error"></p>
+        <div class="auth-panel active" id="panel-login">
+          <form id="login-form">
+            <input type="text" id="login-username" placeholder="Usuario" autocomplete="username" required>
+            <input type="password" id="login-password" placeholder="Contrasena" autocomplete="current-password" required>
+            <button type="submit">Entrar</button>
+          </form>
+          <p id="login-error" class="error"></p>
+        </div>
+
+        <div class="auth-panel" id="panel-register" style="display:none;">
+          <form id="register-form">
+            <input type="text" id="reg-username" placeholder="Usuario (3-20 chars alfanumericos)" autocomplete="username" required>
+            <input type="password" id="reg-password" placeholder="Contrasena (min 4 chars)" autocomplete="new-password" required>
+            <button type="submit">Crear cuenta</button>
+          </form>
+          <p id="reg-error" class="error"></p>
+        </div>
       </div>
     </div>
 
     <div id="logged-in" style="display:none;">
-      <div class="card">
-        <h2>Bienvenido, <span id="me-username"></span></h2>
-        <button onclick="location.href='/lobby.html'">Ir al lobby</button>
-        <button onclick="logout()" class="secondary">Cerrar sesion</button>
+      <div class="card" style="text-align:center; max-width: 520px; margin: 0 auto;">
+        <h2 style="margin-bottom: 20px;">Bienvenido, <span id="me-username"></span></h2>
+        <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+          <button onclick="location.href='/lobby.html'">Ir al lobby</button>
+          <button onclick="logout()" class="secondary">Cerrar sesion</button>
+        </div>
       </div>
     </div>
   </div>

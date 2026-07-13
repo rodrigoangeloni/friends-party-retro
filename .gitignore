@@ -55,3 +55,6 @@ build/
 # Test coverage (if added later)
 coverage/
 .nyc_output/
+
+# Screenshots taken during development
+screenshots/

@@ -39,11 +39,21 @@ async function loadGames() {
   games.forEach((game) => {
     const card = document.createElement('div');
     card.className = 'game-card';
+    card.id = `game-card-${game.id}`;
+    const coverHtml = game.cover_path
+      ? `<div class="cover-wrap"><img src="${game.cover_path}" alt="${game.name}" loading="lazy"></div>`
+      : `<div class="cover-wrap"><div class="cover-placeholder">${game.name.charAt(0)}</div></div>`;
     card.innerHTML = `
-      <h3>${game.name}</h3>
-      <p>Sistema: ${game.system} | Core: ${game.core}</p>
-      <p>Max jugadores: ${game.max_players}</p>
-      ${game.description ? `<p class="desc">${game.description}</p>` : ''}
+      ${coverHtml}
+      <div class="info">
+        <h3>${game.name}</h3>
+        <div class="meta">
+          <span>${game.system.toUpperCase()}</span>
+          <span>${game.core}</span>
+          <span>${game.max_players} jugadores</span>
+        </div>
+        ${game.description ? `<p class="desc">${game.description}</p>` : ''}
+      </div>
       <button onclick="selectGame(${game.id}, '${game.name.replace(/'/g, "\\'")}', ${game.max_players})">Seleccionar</button>
     `;
     grid.appendChild(card);
@@ -58,6 +68,11 @@ async function selectGame(gameId, gameName, maxPlayers) {
   document.getElementById('rooms-section').style.display = 'block';
   document.getElementById('max-players').max = maxPlayers;
   document.getElementById('max-players').value = Math.min(2, maxPlayers);
+
+  document.querySelectorAll('.game-card').forEach(c => c.classList.remove('selected'));
+  const selected = document.getElementById(`game-card-${gameId}`);
+  if (selected) selected.classList.add('selected');
+
   await refreshRooms();
 }
 
@@ -77,10 +92,14 @@ async function refreshRooms() {
       const div = document.createElement('div');
       div.className = 'room-item';
       div.innerHTML = `
-        <strong>${r.room_name}</strong>
-        <span>Host: ${r.player_name}</span>
-        <span>Jugadores: ${r.current}/${r.max}</span>
-        ${r.hasPassword ? '<span class="badge">Con contrasena</span>' : ''}
+        <div class="room-header">
+          <strong>${r.room_name}</strong>
+          ${r.hasPassword ? '<span class="badge">Privada</span>' : '<span class="badge" style="background:rgba(57,255,20,0.12);color:var(--success);border-color:rgba(57,255,20,0.25);">Publica</span>'}
+        </div>
+        <div class="room-meta">
+          <span>Host: ${r.player_name}</span>
+          <span>Jugadores: ${r.current}/${r.max}</span>
+        </div>
         <button onclick="joinRoom('${roomId}', ${r.hasPassword})">Unirse</button>
       `;
       list.appendChild(div);

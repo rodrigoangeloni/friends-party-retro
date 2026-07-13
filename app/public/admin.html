@@ -3,21 +3,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - friends-party-retro</title>
+  <title>Admin - Friends Party Retro</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <div class="container">
-    <div id="topbar">
-      <a href="/lobby.html">&larr; Lobby</a>
-      <span>Panel de Administracion</span>
-      <button onclick="logout()" class="secondary small">Salir</button>
-    </div>
+    <header id="topbar">
+      <div class="brand-group">
+        <a href="/lobby.html" class="brand">&larr; Volver al Lobby</a>
+      </div>
+      <div class="user-group">
+        <span class="badge-admin">Panel Admin</span>
+        <button onclick="logout()" class="secondary small">Salir</button>
+      </div>
+    </header>
 
     <div id="admin-content" style="display:none;">
 
       <section class="card">
-        <h2>Agregar Juego</h2>
+        <h2 class="section-title">Agregar Juego</h2>
         <form id="add-game-form" enctype="multipart/form-data">
           <input type="text" id="game-name" placeholder="Nombre del juego" required>
           <div class="form-row">
@@ -39,11 +43,14 @@
               </select>
             </label>
           </div>
+
           <label>
             Max jugadores
             <input type="number" id="game-max-players" min="1" max="8" value="2">
           </label>
+
           <textarea id="game-description" placeholder="Descripcion (opcional)" rows="2"></textarea>
+
           <div class="form-row">
             <label class="file-label">
               ROM (obligatorio)
@@ -54,21 +61,23 @@
               <input type="file" id="game-cover" accept=".jpg,.jpeg,.png,.gif,.webp">
             </label>
           </div>
+
           <div id="cover-preview"></div>
+
           <button type="submit">Agregar Juego</button>
           <p id="add-error" class="error"></p>
         </form>
       </section>
 
       <section class="card">
-        <h2>Juegos Existentes (<span id="games-count">0</span>)</h2>
+        <h2 class="section-title">Juegos Existentes (<span id="games-count">0</span>)</h2>
         <div id="games-grid" class="games-grid">
-          <p>Cargando...</p>
+          <div class="empty-state">Cargando...</div>
         </div>
       </section>
 
       <section class="card">
-        <h2>Usuarios (<span id="users-count">0</span>)</h2>
+        <h2 class="section-title">Usuarios (<span id="users-count">0</span>)</h2>
         <div class="table-wrapper">
           <table id="users-table">
             <thead>
@@ -91,7 +100,7 @@
 
     <div id="no-admin" style="display:none;">
       <div class="card">
-        <h2>Acceso denegado</h2>
+        <h2 class="section-title">Acceso denegado</h2>
         <p>No tienes permisos de administrador.</p>
         <a href="/lobby.html">Volver al lobby</a>
       </div>
@@ -99,7 +108,7 @@
 
     <div id="not-logged" style="display:none;">
       <div class="card">
-        <h2>No autenticado</h2>
+        <h2 class="section-title">No autenticado</h2>
         <p>Debes iniciar sesion para acceder al panel de admin.</p>
         <a href="/">Iniciar sesion</a>
       </div>

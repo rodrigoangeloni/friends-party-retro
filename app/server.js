@@ -192,14 +192,51 @@ app.delete('/api/rooms/:roomId', authRequired, (req, res) => {
   res.json({ ok: true });
 });
 
+function renderErrorPage({ title, message, code }) {
+  return `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title} - Friends Party Retro</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container" style="display:flex; align-items:center; justify-content:center; min-height:100vh;">
+    <div class="auth-card" style="text-align:center; max-width:460px;">
+      <div class="logo" style="width:64px; height:64px; margin:0 auto 18px; border-radius:14px;">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" style="width:36px; height:36px; fill:#fff;">
+          <path d="M2 10.5v3h3v-3H2zm4-4v11h3v-11H6zm4-3v17h3V3.5h-3zm4 6v11h3v-11h-3zm4-3v14h3V6.5h-3z"/>
+        </svg>
+      </div>
+      <h1 style="font-size:1.1rem; margin-bottom:10px;">${code || 'Error'}</h1>
+      <p class="subtitle" style="margin-bottom:24px;">${message}</p>
+      <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+        <a href="/lobby.html" class="btn">Volver al lobby</a>
+        <a href="/" class="btn secondary">Inicio</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
 app.get('/play/:roomId', authRequired, (req, res) => {
   const room = queries.getRoom.get(req.params.roomId);
   if (!room) {
-    return res.status(404).send('Sala no encontrada');
+    return res.status(404).type('html').send(renderErrorPage({
+      title: 'Sala no encontrada',
+      code: 'SALA NO ENCONTRADA',
+      message: 'La sala que buscas no existe o ya fue cerrada.'
+    }));
   }
   const game = queries.getGameById.get(room.game_id);
   if (!game) {
-    return res.status(404).send('Juego no encontrado');
+    return res.status(404).type('html').send(renderErrorPage({
+      title: 'Juego no encontrado',
+      code: 'JUEGO NO ENCONTRADO',
+      message: 'El juego asociado a esta sala ya no está disponible.'
+    }));
   }
 
   const turnUrl = process.env.TURN_URL || '';

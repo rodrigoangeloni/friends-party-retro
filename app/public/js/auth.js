@@ -31,6 +31,18 @@ function showLoginForm() {
   document.getElementById('logged-in').style.display = 'none';
 }
 
+function switchAuthTab(tab) {
+  document.querySelectorAll('.auth-tab').forEach((btn) => {
+    const isActive = btn.dataset.tab === tab;
+    btn.classList.toggle('active', isActive);
+    btn.setAttribute('aria-selected', String(isActive));
+  });
+  document.getElementById('panel-login').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('panel-register').style.display = tab === 'register' ? 'block' : 'none';
+  document.getElementById('login-error').textContent = '';
+  document.getElementById('reg-error').textContent = '';
+}
+
 async function login(username, password) {
   const data = await api('/api/login', {
     method: 'POST',
@@ -53,6 +65,10 @@ async function logout() {
   await api('/api/logout', { method: 'POST' });
   location.href = '/';
 }
+
+document.querySelectorAll('.auth-tab').forEach((btn) => {
+  btn.addEventListener('click', () => switchAuthTab(btn.dataset.tab));
+});
 
 document.getElementById('login-form')?.addEventListener('submit', async (e) => {
   e.preventDefault();
