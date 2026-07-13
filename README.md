@@ -268,18 +268,6 @@ Proyecto personal. EmulatorJS es Apache-2.0, el netplay server también.
 
 [![GitHub](https://img.shields.io/badge/GitHub-rodrigoangeloni-181717.svg?logo=github)](https://github.com/rodrigoangeloni)
 
-### Tecnologías utilizadas
-
-![Node.js](https://img.shields.io/badge/Node.js-339933?logo=node.js&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?logo=express&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-003B57?logo=sqlite&logoColor=white)
-![Socket.io](https://img.shields.io/badge/Socket.io-010101?logo=socket.io&logoColor=white)
-![EmulatorJS](https://img.shields.io/badge/EmulatorJS-F5A623?logo=javascript&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?logo=nginx&logoColor=white)
-
 ### Agradecimientos
 
 - [EmulatorJS](https://github.com/EmulatorJS/EmulatorJS) — Motor de emulación (RetroArch → WASM)
