@@ -200,17 +200,6 @@ cp -r app/node_modules/@emulatorjs/emulatorjs/data/* app/public/data/
 
 > ⚠️ **Importante**: No usar el CDN `cdn.emulatorjs.org/latest/data/emulator.min.zip` — contiene un ES module que rompe en `<script>` tags regulares.
 
-## 🚀 Estado de desarrollo
-
-- [x] Fase 1-14: Backend, frontend, configs, scripts, PM2
-- [x] Fase 15: Panel de administración (upload ROMs + covers, gestión usuarios)
-- [x] Testing local completo (registro → lobby → sala → emulador)
-- [ ] Fase 16: Sincronización de inputs P2P entre jugadores
-- [ ] Fase 17: Despliegue en producción
-- [ ] Tests automatizados
-
-Ver `PLAN.md` y `PLAN-ADMIN.md` para el detalle completo de fases.
-
 ## 📋 Requisitos mínimos
 
 | Componente | Requisito |
