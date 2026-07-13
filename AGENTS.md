@@ -1,93 +1,68 @@
 # AGENTS.md
 
-## Architecture
+## Two processes required
 
-Two separate Node.js processes must run simultaneously for the platform to work:
+Both must run simultaneously for netplay to work:
 
-1. **`netplay-server/`** — EmulatorJS-Netplay (unmodified upstream). Socket.io signaling + WebRTC relay. Port 3000. `cd netplay-server && node server.js`
-2. **`app/`** — Custom Express app. Auth (JWT + bcrypt), lobby API, admin panel, serves EmulatorJS static files. Port 8080. `cd app && node server.js`
+1. **Netplay server**: `cd netplay-server && node server.js` → port 3000
+2. **Custom app**: `cd app && node server.js` → port 8080
 
-Production: Nginx (port 80) reverse-proxies both. PM2 manages both processes via `ecosystem.config.js`.
+Local browser target: `http://localhost:8080`.
 
-## Local testing (Windows)
+## EmulatorJS data setup
 
-```bash
-# Terminal 1
-cd netplay-server && node server.js   # → http://localhost:3000
-
-# Terminal 2
-cd app && node server.js              # → http://localhost:8080
-```
-
-Open `http://localhost:8080`. Admin: `admin` / `admin123` (or `ADMIN_PASSWORD` env var).
-
-Skip Nginx and coturn for local testing — Express serves static files directly.
-
-## EmulatorJS data setup (non-obvious)
-
-The EmulatorJS runtime files in `app/public/data/` are NOT committed (see `.gitignore`). They must be copied from the npm package:
+`app/public/data/` is gitignored. Populate it from the npm package, not the CDN:
 
 ```bash
-# data/ is sourced from the @emulatorjs/emulatorjs npm package, NOT the CDN
-# The CDN zip ships an ES module (emulator.min.js) that breaks in regular <script> tags
-# The npm package ships src/ individual files which work correctly with loader.js
-cp -r app/node_modules/@emulatorjs/emulatorjs/data/* app/public/data/
+cd app && npm install
+cp -r node_modules/@emulatorjs/emulatorjs/data/* public/data/
 ```
 
-The play page (`renderPlayPage` in `app/server.js`) sets `EJS_DEBUG_XX = true` to force the loader to use `src/` individual files instead of `emulator.min.js`. Do not change this unless you also provide a working `emulator.min.js`.
-
-`socket.io.min.js` is loaded via a separate `<script>` tag before `loader.js` so the `io` global is available when `netplay-client.js` runs synchronously.
+- The CDN zip ships `emulator.min.js` as an ES module; it breaks in regular `<script>` tags.
+- `app/server.js` (`renderPlayPage`) sets `EJS_DEBUG_XX = true` to force `loader.js` to use the individual `src/` files.
+- The play page loads `socket.io.min.js` before `loader.js` so the `io` global exists when `netplay-client.js` runs.
 
 ## Database
 
-SQLite at `app/db/users.sqlite` (also gitignored). Managed by `better-sqlite3`.
+SQLite at `app/db/users.sqlite` (gitignored). No migrations. If you change columns in `app/db.js`, delete the DB so `init()` recreates it:
 
-```
-users:          id, username, password_hash, is_admin, created_at
-games:          id, name, system, core, rom_path, max_players, description, cover_path
-active_rooms:   room_id, game_id, room_name, max_players, password, host_user_id, created_at
-```
-
-**Schema changes require DB deletion** — there's no migration system. If you change columns in `app/db.js`, delete the DB file so `init()` recreates it:
 ```bash
 rm app/db/users.sqlite app/db/users.sqlite-wal app/db/users.sqlite-shm
 ```
 
-`db.js` seeds an `admin` user and the MK3 game on first init.
+`db.js` seeds admin user + MK3 game on first init.
 
-## File upload conventions
+- Admin password: `ADMIN_PASSWORD` env var, or default `admin123`.
+- Changing `ADMIN_PASSWORD` after init does not update the password; delete the DB to reset.
 
-`app/upload.js` exports `uploadGameFiles` — a multer instance configured with `.fields()` for two fields: `rom` and `cover`. Use it as middleware, not `require('multer').fields(...)` (that was a bug — `require('multer')` returns the constructor, not an instance).
+## File uploads
 
-- ROMs → `app/public/roms/` (max 16MB, extensions: `.sfc .smc .nes .gba .gb .gbc .gen .md .zip .7z`)
-- Covers → `app/public/covers/` (max 2MB, extensions: `.jpg .jpeg .png .gif .webp`)
-- Filenames sanitized + prefixed with timestamp
+`app/upload.js` exports a multer instance (`uploadGameFiles`) configured with `.fields([{name:'rom'}, {name:'cover'}])`. Use it as middleware.
+
+- ROMs: `app/public/roms/`, max 16 MB, extensions `.sfc .smc .nes .gba .gb .gbc .gen .md .zip .7z`
+- Covers: `app/public/covers/`, max 2 MB, extensions `.jpg .jpeg .png .gif .webp`
+- Filenames are sanitized and prefixed with a timestamp.
+
+## Express version split
+
+- `app/` uses Express 4.
+- `netplay-server/` uses Express 5 (upstream submodule).
+
+Don't copy middleware/routing patterns between them casually.
 
 ## Frontend
 
-Vanilla HTML/CSS/JS, no build step. Served from `app/public/`.
+No build step. Static files in `app/public/`.
 
-- `index.html` → login/register
-- `lobby.html` → game selection + room creation
-- `play/:roomId` → server-rendered HTML (`renderPlayPage`) injecting EmulatorJS config + `<script>` tags
-- `admin.html` → admin panel (only visible if `is_admin`)
-- `netplay-client.js` → socket.io client bridge to netplay server (connects to port 3000)
+- `index.html` — login/register
+- `lobby.html` — game selection + room creation
+- `play/:roomId` — server-rendered HTML from `renderPlayPage`; config is injected into a template string, so escape values properly.
+- `admin.html` — admin panel, visible only if `is_admin`
 
-Play page is server-rendered (not a static file) because EmulatorJS config is injected into a template string. If you add config, escape values properly — this is HTML-in-JS.
+## No tests
 
-## Admin credentials
+No automated test suite exists. Verify manually via browser + curl.
 
-Default: `admin` / `admin123`. Override via `ADMIN_PASSWORD` env var. The admin seed runs in `db.js init()` — changing `ADMIN_PASSWORD` after first init won't update the password (delete DB to reset).
+## Production
 
-## Key gotchas
-
-- **Two processes**: Both `app` and `netplay-server` must run for netplay to work. The netplay-client connects to port 3000, not the app port.
-- **DB recreation**: No migrations. Changing schema = delete DB file.
-- **EmulatorJS source**: Use npm package, NOT CDN zip (CDN ships ES module that breaks loader).
-- **`EJS_DEBUG_XX = true`**: Required — the minified bundle from CDN uses ES `export` syntax that fails in regular `<script>` tags.
-- **Express version mismatch**: `app/` uses Express 4, `netplay-server/` uses Express 5. Don't copy code between them casually.
-- **No tests**: No automated test suite exists. Verify manually via browser + curl.
-
-## Production deploy
-
-See `DEPLOY.md` for full OrangePi deployment (Armbian, Nginx, coturn, PM2).
+See `DEPLOY.md` for Nginx + coturn + PM2 deployment. `ecosystem.config.js` is the PM2 entry point.
